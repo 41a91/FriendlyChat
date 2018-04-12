@@ -9,6 +9,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Pattern;
@@ -44,6 +45,32 @@ public class GetMessageController {
         }
         mongoClient.close();
         return unreadMessages;
+    }
+    
+    public boolean updateMessageToRead(Message message  , String username){
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+        
+        MongoClient mongoClient = new MongoClient("mcsb08:27017", MongoClientOptions.builder()
+                .codecRegistry(pojoCodecRegistry).build());
+        
+        MongoDatabase db = mongoClient.getDatabase("TerrorChat");
+        MongoCollection<Message>messages = db.getCollection("message",Message.class);
+       
+        
+        //Need to ad a filter for each user 
+        String body = message.getBody();
+        String fromUsername = message.getFromUsername();
+        String subject = message.getSubject();
+        
+        Document d = new Document().append("body",body)
+                                        .append("toUsername", username)
+                                        .append("fromUsername", fromUsername)
+                                        .append("subject", subject);
+        
+        messages.updateOne(d, set("read",true));
+        mongoClient.close();
+        return true;
     }
     
     public ArrayList<Message> getAllFromSpecifiedUser(String fromUsername, String toUsername){
