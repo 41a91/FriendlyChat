@@ -19,7 +19,7 @@ public class sendMessagePanel extends javax.swing.JPanel {
         while(it.hasNext()){
             //set to string and save to variable. Then add that to the combobox
             it.next();
-            jComboBox1.addItem("boop");
+            draftComboBobo.addItem("boop");
         }
     }
     @SuppressWarnings("unchecked")
@@ -32,10 +32,10 @@ public class sendMessagePanel extends javax.swing.JPanel {
         subjectTextField = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         bodyTextArea = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
+        sendButton = new javax.swing.JButton();
         getButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        draftComboBobo = new javax.swing.JComboBox<>();
 
         toTextField.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
         toTextField.addInputMethodListener(new java.awt.event.InputMethodListener() {
@@ -59,14 +59,15 @@ public class sendMessagePanel extends javax.swing.JPanel {
         bodyTextArea.setRows(5);
         jScrollPane1.setViewportView(bodyTextArea);
 
-        jButton1.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
-        jButton1.setText("Send");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        sendButton.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
+        sendButton.setText("Send");
+        sendButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                sendButtonActionPerformed(evt);
             }
         });
 
+        getButton.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
         getButton.setText("get draft");
         getButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -74,6 +75,7 @@ public class sendMessagePanel extends javax.swing.JPanel {
             }
         });
 
+        saveButton.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
         saveButton.setText("save draft");
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -81,7 +83,8 @@ public class sendMessagePanel extends javax.swing.JPanel {
             }
         });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        draftComboBobo.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
+        draftComboBobo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -100,7 +103,7 @@ public class sendMessagePanel extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel2))
-                            .addComponent(jButton1))
+                            .addComponent(sendButton))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -111,7 +114,7 @@ public class sendMessagePanel extends javax.swing.JPanel {
                                 .addGap(87, 87, 87)
                                 .addComponent(saveButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBox1, 0, 77, Short.MAX_VALUE)
+                                .addComponent(draftComboBobo, 0, 73, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(getButton, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
@@ -121,7 +124,7 @@ public class sendMessagePanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(sendButton)
                         .addGap(4, 4, 4)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -130,18 +133,18 @@ public class sendMessagePanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(getButton)
                             .addComponent(saveButton)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(draftComboBobo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(1, 1, 1)
                         .addComponent(toTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(subjectTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
        
         String[] toList = toTextField.getText().split(";");
         String from = ((MainPanel)this.getParent()).getUsername();
@@ -149,8 +152,10 @@ public class sendMessagePanel extends javax.swing.JPanel {
         String body = bodyTextArea.getText();
         
         SendMessageController.insertMessage(toList, from, subject, body);
-               
-    }//GEN-LAST:event_jButton1ActionPerformed
+        bodyTextArea.setText("");
+        subjectTextField.setText("");
+        toTextField.setText("");
+    }//GEN-LAST:event_sendButtonActionPerformed
 
     private void toTextFieldInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_toTextFieldInputMethodTextChanged
         
@@ -167,13 +172,13 @@ public class sendMessagePanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea bodyTextArea;
+    private javax.swing.JComboBox<String> draftComboBobo;
     private javax.swing.JButton getButton;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton saveButton;
+    private javax.swing.JButton sendButton;
     private javax.swing.JTextField subjectTextField;
     private javax.swing.JTextField toTextField;
     // End of variables declaration//GEN-END:variables
