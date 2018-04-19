@@ -18,8 +18,8 @@ public class MainPanel extends javax.swing.JPanel
         panels.add(new LoginPanel());
         panels.add(new sendMessagePanel());
         panels.add(new registerPanel());
-        panels.add(new GetMessagePanel());
-        
+        //panels.add(new GetMessagePanel());
+        panels.add(new RetrieveMessagePanel());
         
         username = getUsername();
        
