@@ -26,7 +26,6 @@ public class BoldRenderer extends  DefaultTableCellRenderer{
         }else{
             this.setFont(this.getFont().deriveFont(Font.PLAIN));
         }
-
         return this;
     }
 

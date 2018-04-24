@@ -265,17 +265,15 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
         } else {
             //displayTextArea.setText(" ");
             
-            //table.setDefaultRenderer(Object.class, br);
+            table.setDefaultRenderer(Object.class, br);
             for (int i = 0; i < messages.size(); i++) {
                 Object[] row = new Object[4];
                 System.out.println(i + ": " + br.isIsRead());
                 if(messages.get(i).isRead())
                 {
                     br.setIsRead(true); 
-                    table.setDefaultRenderer(BoldRenderer.class, br);
                 }else{
                     br.setIsRead(false);
-                    table.setDefaultRenderer(BoldRenderer.class, null);
                 }
                 row[0] = messages.get(i).getToUsername();
                 row[1] = messages.get(i).getFromUsername();

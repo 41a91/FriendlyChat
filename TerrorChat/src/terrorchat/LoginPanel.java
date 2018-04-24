@@ -115,7 +115,7 @@ private String username;
         boolean success = loginController.login(usernameTextField.getText(), passwordField.getText());
         
         if(success){
-            resultLabel.setText("Login Successful!");
+            resultLabel.setText("");
             ((MainPanel)this.getParent()).setUsername(usernameTextField.getText()); 
             MainFrame mainFrame = (MainFrame) SwingUtilities.getWindowAncestor((MainPanel)this.getParent());
             mainFrame.setVisibility(true); 

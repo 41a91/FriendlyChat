@@ -38,7 +38,7 @@ public class MainFrame extends javax.swing.JFrame {
         panelMenu = new javax.swing.JMenu();
         sendMessageMenuItem = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        logOutMenu = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -60,15 +60,19 @@ public class MainFrame extends javax.swing.JFrame {
         });
         panelMenu.add(jMenuItem1);
 
-        jMenuItem2.setText("Logout");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+        jMenuBar1.add(panelMenu);
+
+        logOutMenu.setText("Log Out");
+        logOutMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                logOutMenuMenuSelected(evt);
             }
         });
-        panelMenu.add(jMenuItem2);
-
-        jMenuBar1.add(panelMenu);
+        jMenuBar1.add(logOutMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -98,12 +102,12 @@ public class MainFrame extends javax.swing.JFrame {
         mainPanel1.getManager().goToPanel(3);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void logOutMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_logOutMenuMenuSelected
         LoginController lc = new LoginController();
         lc.logOut(mainPanel1.getUsername());
         jMenuBar1.setVisible(false);
         mainPanel1.getManager().goToPanel(0);
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_logOutMenuMenuSelected
 
     /**
      * @param args the command line arguments
@@ -146,7 +150,7 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenu logOutMenu;
     private terrorchat.MainPanel mainPanel1;
     private javax.swing.JMenu panelMenu;
     private javax.swing.JMenuItem sendMessageMenuItem;
