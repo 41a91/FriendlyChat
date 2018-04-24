@@ -2,24 +2,32 @@
 package terrorchat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 
 public class sendMessagePanel extends javax.swing.JPanel {
 
+    
+    private HashMap<String,Draft> map;
+    private int bongo;
    
     public sendMessagePanel() {
         initComponents();
+        
+        map = new HashMap<>();
+        bongo = 0;
         
         
     }
 
     private void fillCombo(){
-        Iterator it = SendMessageController.getDrafts(((MainPanel)this.getParent()).getUsername());
+        
+       map = SendMessageController.getDrafts(((MainPanel)this.getParent()).getUsername());
+       Iterator it = map.keySet().iterator();
         while(it.hasNext()){
             //set to string and save to variable. Then add that to the combobox
-            it.next();
-            draftComboBobo.addItem("boop");
+            draftComboBobo.addItem((String)it.next());
         }
     }
     @SuppressWarnings("unchecked")
@@ -36,6 +44,7 @@ public class sendMessagePanel extends javax.swing.JPanel {
         getButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
         draftComboBobo = new javax.swing.JComboBox<>();
+        deleteComboButton = new javax.swing.JButton();
 
         toTextField.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
         toTextField.addInputMethodListener(new java.awt.event.InputMethodListener() {
@@ -84,7 +93,13 @@ public class sendMessagePanel extends javax.swing.JPanel {
         });
 
         draftComboBobo.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
-        draftComboBobo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        deleteComboButton.setText("X");
+        deleteComboButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteComboButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -104,19 +119,18 @@ public class sendMessagePanel extends javax.swing.JPanel {
                                 .addContainerGap()
                                 .addComponent(jLabel2))
                             .addComponent(sendButton))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(toTextField)
-                                    .addComponent(subjectTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(87, 87, 87)
                                 .addComponent(saveButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(draftComboBobo, 0, 73, Short.MAX_VALUE)
+                                .addComponent(draftComboBobo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(getButton, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(deleteComboButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(getButton, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(toTextField)
+                            .addComponent(subjectTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -132,8 +146,10 @@ public class sendMessagePanel extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(getButton)
-                            .addComponent(saveButton)
-                            .addComponent(draftComboBobo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(saveButton)
+                                .addComponent(draftComboBobo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(deleteComboButton)))
                         .addGap(1, 1, 1)
                         .addComponent(toTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -162,16 +178,39 @@ public class sendMessagePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_toTextFieldInputMethodTextChanged
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
+        String toList = toTextField.getText();
+        String from = ((MainPanel)this.getParent()).getUsername();
+        String subject = subjectTextField.getText();
+        String body = bodyTextArea.getText();
         
+        SendMessageController.insertDrafts(toList, from, subject, body);
+        bodyTextArea.setText("");
+        subjectTextField.setText("");
+        toTextField.setText("");
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void getButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getButtonActionPerformed
+        if(bongo == 0){
+            bongo = 1;
+            fillCombo();
+        }
+        else{
+            Draft draft = map.get(draftComboBobo.getSelectedItem());
+            toTextField.setText(draft.getToUsername());
+            bodyTextArea.setText(draft.getBody());
+            subjectTextField.setText(draft.getSubject());  
+        }
         
     }//GEN-LAST:event_getButtonActionPerformed
+
+    private void deleteComboButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteComboButtonActionPerformed
+        
+    }//GEN-LAST:event_deleteComboButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea bodyTextArea;
+    private javax.swing.JButton deleteComboButton;
     private javax.swing.JComboBox<String> draftComboBobo;
     private javax.swing.JButton getButton;
     private javax.swing.JLabel jLabel1;

@@ -89,6 +89,7 @@ public class GetMessagePanel extends javax.swing.JPanel {
         displayTextArea = new javax.swing.JTextArea();
         getAllMessagesButton = new javax.swing.JButton();
 
+        getUnreadButton.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
         getUnreadButton.setText("Get Unread");
         getUnreadButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -96,6 +97,7 @@ public class GetMessagePanel extends javax.swing.JPanel {
             }
         });
 
+        getSentButton.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
         getSentButton.setText("Get Sent");
         getSentButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -103,6 +105,7 @@ public class GetMessagePanel extends javax.swing.JPanel {
             }
         });
 
+        getAllFromUserButton.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
         getAllFromUserButton.setText("Get All From User");
         getAllFromUserButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -110,8 +113,12 @@ public class GetMessagePanel extends javax.swing.JPanel {
             }
         });
 
+        userTextField.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
+
+        jLabel1.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
         jLabel1.setText("Search Messages for Term");
 
+        searchTextField.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
         searchTextField.addInputMethodListener(new java.awt.event.InputMethodListener() {
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
@@ -126,9 +133,11 @@ public class GetMessagePanel extends javax.swing.JPanel {
         });
 
         displayTextArea.setColumns(20);
+        displayTextArea.setFont(new java.awt.Font("Jokerman", 0, 13)); // NOI18N
         displayTextArea.setRows(5);
         jScrollPane1.setViewportView(displayTextArea);
 
+        getAllMessagesButton.setFont(new java.awt.Font("Jokerman", 0, 11)); // NOI18N
         getAllMessagesButton.setText("Get All Messages");
         getAllMessagesButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -156,7 +165,7 @@ public class GetMessagePanel extends javax.swing.JPanel {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 82, Short.MAX_VALUE))
+                .addGap(0, 64, Short.MAX_VALUE))
             .addComponent(jScrollPane1)
         );
         layout.setVerticalGroup(
@@ -175,7 +184,7 @@ public class GetMessagePanel extends javax.swing.JPanel {
                     .addComponent(jLabel1)
                     .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

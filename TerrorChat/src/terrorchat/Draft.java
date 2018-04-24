@@ -7,7 +7,7 @@ package terrorchat;
 
 
 public class Draft {
- private String[] toUsername;
+ private String toUsername;
  private String fromUsername;
  private String subject;
  private String body;
@@ -21,7 +21,7 @@ public class Draft {
         this.timeStamp = 0;
     }
 
-    public Draft(String[] toUsernames, String fromUsername, String subject, String body, long timeStamp) {
+    public Draft(String toUsernames, String fromUsername, String subject, String body, long timeStamp) {
         this.toUsername = toUsernames;
         this.fromUsername = fromUsername;
         this.subject = subject;
@@ -29,11 +29,11 @@ public class Draft {
         this.timeStamp = timeStamp;
     }
 
-    public String[] getToUsername() {
+    public String getToUsername() {
         return toUsername;
     }
 
-    public void setToUsername(String[] toUsername) {
+    public void setToUsername(String toUsername) {
         this.toUsername = toUsername;
     }
 
@@ -71,7 +71,7 @@ public class Draft {
 
     @Override
     public String toString() {
-        return "Message{" + "toUsername=" + toUsername.length + ", fromUsername=" + fromUsername + ", subject=" + subject + ", body=" + body + ", timeStamp=" + timeStamp + "}";
+        return "Message{" + "toUsername=" + toUsername + ", fromUsername=" + fromUsername + ", subject=" + subject + ", body=" + body + ", timeStamp=" + timeStamp + "}";
     }
     
     

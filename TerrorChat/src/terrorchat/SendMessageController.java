@@ -10,8 +10,10 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
@@ -46,22 +48,34 @@ public class SendMessageController {
         mongoClient.close();  
     }
     
-    public static Iterator getDrafts(String username){
+    public static HashMap<String,Draft> getDrafts(String username){
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
                 fromProviders(PojoCodecProvider.builder().automatic(true).build()));
         
         MongoClient mongoClient = new MongoClient("mcsb08:27017", MongoClientOptions.builder().codecRegistry(pojoCodecRegistry).build());
         MongoDatabase db = mongoClient.getDatabase("TerrorChat");
         
-        MongoCollection<Draft> drafts = db.getCollection("drafts",Draft.class);
+        MongoCollection<Draft> drafts = db.getCollection("draft",Draft.class);
         
-        Iterator it = drafts.find(Filters.eq("username", username)).iterator();
+        Iterator it = drafts.find(Filters.eq("fromUsername", username)).iterator();
         mongoClient.close();
-        return it;
+        
+        HashMap<String,Draft> map = new HashMap<>();
+        
+        while(it.hasNext())
+        {
+            Draft temp = (Draft)it.next();
+            map.put(temp.getSubject(), temp);
+        }
+        
+        
+        
+        
+        return map;
         
     }
     
-    public static void InsertDrafts(String[] to, String from, String subject, String body){
+    public static void insertDrafts(String to, String from, String subject, String body){
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
                 fromProviders(PojoCodecProvider.builder().automatic(true).build()));
         
@@ -69,15 +83,11 @@ public class SendMessageController {
         
         MongoDatabase db = mongoClient.getDatabase("TerrorChat");
         MongoCollection<Draft> drafts = db.getCollection("draft",Draft.class);
-        
-        
         Draft temp = new Draft(to,from,subject,body,new Date().getTime());
-        
         drafts.insertOne(temp);
         
         mongoClient.close();  
     }
-    
     
     
     
