@@ -89,6 +89,20 @@ public class SendMessageController {
         mongoClient.close();  
     }
     
+    public static void deleteDraft(String subject){
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+        
+        MongoClient mongoClient = new MongoClient("mcsb08:27017", MongoClientOptions.builder().codecRegistry(pojoCodecRegistry).build());
+        
+        MongoDatabase db = mongoClient.getDatabase("TerrorChat");
+        MongoCollection<Draft> drafts = db.getCollection("draft",Draft.class);
+        
+        drafts.deleteOne(Filters.eq("subject", subject));
+        
+        mongoClient.close();  
+    }
+    
     
     
     
