@@ -25,17 +25,74 @@ import jdk.nashorn.internal.runtime.options.Options;
  * @author moorhem
  */
 public class RetrieveMessagePanel extends javax.swing.JPanel {
-    
+
     private GetMessageController gmc = new GetMessageController();
     private String loggedInUser;
     private ArrayList<Message> messages;
-    
+    private Mode mode = Mode.GETALL;
+
     public RetrieveMessagePanel() {
         initComponents();
         table.setCellEditor(null);
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent lse) {
+                int selected = table.getSelectedRow();
+                try {
+                    Message m = messages.get(selected);
+                    if (m != null) {
+                        Object[] options = {"Mark Read", "Cancel", "Delete Message"};
+                        JTextArea text = new JTextArea(m.getBody());
+                        text.setRows(25);
+                        text.setColumns(80);
+                        JComponent[] inputs = new JComponent[]{
+                            new JLabel("To: " + m.getToUsername()), new JLabel("From: " + m.getFromUsername()),
+                            new JLabel("Subject: " + m.getSubject()),
+                            new JLabel("Date: " + m.getTimeStamp()), text
+                        };
+                        //int response = JOptionPane.showConfirmDialog(RetrieveMessagePanel.this,inputs, "Message", JOptionPane.INFORMATION_MESSAGE);
+                        int response = JOptionPane.showOptionDialog(RetrieveMessagePanel.this, inputs, "Message", JOptionPane.YES_NO_CANCEL_OPTION,
+                                JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+                        System.out.println("response" + response);
+                        if (response == 0) {
+                            //Mark as read
+                            boolean success = gmc.updateMessageToRead(m, loggedInUser);
+                            System.out.println("Success " + success);
+                            System.out.println("Mode " + mode);
+                            if (success) {
+                                if(mode == Mode.GETALL)
+                                {
+                                    getAllFromUser();
+                                }
+                                else if(mode == Mode.GETSENT)
+                                {
+                                    getSentMessages();
+                                }
+                                else if(mode == Mode.GETSPECIFICUSER)
+                                {
+                                    getAllFromUser();
+                                }
+                                else if(mode == Mode.GETUNREAD)
+                                {
+                                    getUnreadMessages();
+                                }
+                            }
+                        } else if (response == 1) {
+                            //Cancel
+                        } else {
+                            //Delete
+                        }
+                    }
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    System.out.println("Excpeiton caught");
+                }
+
+            }
+        });
+        messages = new ArrayList<>();
+        searchTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent de) {
                 loggedInUser = ((MainPanel) RetrieveMessagePanel.this.getParent()).getUsername();
                 DefaultTableModel model = new DefaultTableModel();
                 table.setModel(model);
@@ -47,12 +104,12 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
                     //displayTextArea.setText("No Messages Found!");
                 } else {
                     //displayTextArea.setText(" ");
-                    
+
                     for (int i = 0; i < messages.size(); i++) {
                         Object[] row = new Object[5];
                         System.out.println(i + ": " + br.isIsRead());
                         if (messages.get(i).isRead()) {
-                            br.setIsRead(true);                            
+                            br.setIsRead(true);
                         } else {
                             br.setIsRead(false);
                         }
@@ -61,46 +118,7 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
                         row[2] = messages.get(i).getSubject();
                         row[3] = new Date(messages.get(i).getTimeStamp());
                         row[4] = messages.get(i).isRead();
-                        
-                        model.addRow(row);
 
-                        //displayTextArea.append(messages.get(i).toString());
-                    }
-                    table.setDefaultRenderer(Object.class, br);
-                }
-                revalidate();
-                repaint();                
-            }
-        });
-        messages = new ArrayList<>();
-        searchTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent de) {
-                loggedInUser = ((MainPanel) RetrieveMessagePanel.this.getParent()).getUsername();
-                DefaultTableModel model = new DefaultTableModel();
-                table.setModel(model);
-                String[] columnNames = {"To", "From", "Subject", "Date"};
-                BoldRenderer br = new BoldRenderer();
-                model.setColumnIdentifiers(columnNames);
-                messages = gmc.getMessageBySearchedTerm(searchTextField.getText(), loggedInUser);
-                if (messages.size() == 0) {
-                    //displayTextArea.setText("No Messages Found!");
-                } else {
-                    //displayTextArea.setText(" ");
-                    
-                    for (int i = 0; i < messages.size(); i++) {
-                        Object[] row = new Object[4];
-                        System.out.println(i + ": " + br.isIsRead());
-                        if (messages.get(i).isRead()) {
-                            br.setIsRead(true);                            
-                        } else {
-                            br.setIsRead(false);
-                        }
-                        row[0] = messages.get(i).getToUsername();
-                        row[1] = messages.get(i).getFromUsername();
-                        row[2] = messages.get(i).getSubject();
-                        row[3] = new Date(messages.get(i).getTimeStamp());
-                        
                         model.addRow(row);
 
                         //displayTextArea.append(messages.get(i).toString());
@@ -110,7 +128,7 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
                 revalidate();
                 repaint();
             }
-            
+
             @Override
             public void removeUpdate(DocumentEvent de) {
                 System.out.println("remove update");
@@ -126,12 +144,12 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
                     //displayTextArea.setText("No Messages Found!");
                 } else {
                     //displayTextArea.setText(" ");
-                    
+
                     for (int i = 0; i < messages.size(); i++) {
-                        Object[] row = new Object[4];
+                        Object[] row = new Object[5];
                         System.out.println(i + ": " + br.isIsRead());
                         if (messages.get(i).isRead()) {
-                            br.setIsRead(true);                            
+                            br.setIsRead(true);
                         } else {
                             br.setIsRead(false);
                         }
@@ -139,7 +157,8 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
                         row[1] = messages.get(i).getFromUsername();
                         row[2] = messages.get(i).getSubject();
                         row[3] = new Date(messages.get(i).getTimeStamp());
-                        
+                        row[4] = messages.get(i).isRead();
+
                         model.addRow(row);
 
                         //displayTextArea.append(messages.get(i).toString());
@@ -149,7 +168,7 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
                 revalidate();
                 repaint();
             }
-            
+
             @Override
             public void changedUpdate(DocumentEvent de) {
                 System.out.println("Changed!");
@@ -164,12 +183,12 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
                     //displayTextArea.setText("No Messages Found!");
                 } else {
                     //displayTextArea.setText(" ");
-                    
+
                     for (int i = 0; i < messages.size(); i++) {
-                        Object[] row = new Object[4];
+                        Object[] row = new Object[5];
                         System.out.println(i + ": " + br.isIsRead());
                         if (messages.get(i).isRead()) {
-                            br.setIsRead(true);                            
+                            br.setIsRead(true);
                         } else {
                             br.setIsRead(false);
                         }
@@ -177,7 +196,8 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
                         row[1] = messages.get(i).getFromUsername();
                         row[2] = messages.get(i).getSubject();
                         row[3] = new Date(messages.get(i).getTimeStamp());
-                        
+                        row[4] = messages.get(i).isRead();
+
                         model.addRow(row);
 
                         //displayTextArea.append(messages.get(i).toString());
@@ -190,6 +210,151 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
         });
     }
     
+    
+    
+    
+    
+    private void getUnreadMessages()
+    {
+        messages = gmc.getAllUnreadMessages(loggedInUser);
+        String[][] data = new String[messages.size()][5];
+        String[] columnNames = {"To", "From", "Subject", "Date", "Read"};
+        for (int i = 0; i < messages.size(); i++) {
+                String[] row = new String[5];
+                row[0] = messages.get(i).getToUsername();
+                row[1] = messages.get(i).getFromUsername();
+                row[2] = messages.get(i).getSubject();
+                row[3] = new Date(messages.get(i).getTimeStamp()).toString();
+                row[4] = messages.get(i).isRead() +"";
+                data[i]=row;
+            }
+        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        table.setModel(model);
+        //revalidate();
+        //repaint();
+        //model.fireTableDataChanged();
+    }
+    
+    private void getSentMessages()
+    {
+        mode = Mode.GETSENT;
+        loggedInUser = ((MainPanel) RetrieveMessagePanel.this.getParent()).getUsername();
+        DefaultTableModel model = new DefaultTableModel();
+        table.setModel(model);
+        String[] columnNames = {"To", "From", "Subject", "Date", "Read"};
+        BoldRenderer br = new BoldRenderer();
+        model.setColumnIdentifiers(columnNames);
+        messages = gmc.getAllSentMessages(loggedInUser);
+        if (messages.size() == 0) {
+            //displayTextArea.setText("No Messages Found!");
+        } else {
+            //displayTextArea.setText(" ");
+
+            table.setDefaultRenderer(Object.class, br);
+            for (int i = 0; i < messages.size(); i++) {
+                Object[] row = new Object[5];
+                System.out.println(i + ": " + br.isIsRead());
+                if (messages.get(i).isRead()) {
+                    br.setIsRead(true);
+                } else {
+                    br.setIsRead(false);
+                }
+                row[0] = messages.get(i).getToUsername();
+                row[1] = messages.get(i).getFromUsername();
+                row[2] = messages.get(i).getSubject();
+                row[3] = new Date(messages.get(i).getTimeStamp());
+                row[4] = messages.get(i).isRead();
+                model.addRow(row);
+
+                //displayTextArea.append(messages.get(i).toString());
+            }
+        }
+        revalidate();
+        repaint();
+        model.fireTableDataChanged();
+    }
+    
+    private void getAllMessages()
+    {
+        mode = Mode.GETALL;
+        loggedInUser = ((MainPanel) RetrieveMessagePanel.this.getParent()).getUsername();
+        DefaultTableModel model = new DefaultTableModel();
+        table.setModel(model);
+        String[] columnNames = {"To", "From", "Subject", "Date", "Read"};
+        BoldRenderer br = new BoldRenderer();
+        model.setColumnIdentifiers(columnNames);
+        messages = gmc.getAllMessages(loggedInUser);
+        if (messages.size() == 0) {
+            //displayTextArea.setText("No Messages Found!");
+        } else {
+            //displayTextArea.setText(" ");
+
+            table.setDefaultRenderer(Object.class, br);
+            for (int i = 0; i < messages.size(); i++) {
+                Object[] row = new Object[5];
+                //table.getColumn("To").setCellRenderer(br);
+                System.out.println(i + ": " + br.isIsRead());
+                if (messages.get(i).isRead()) {
+                    br.setIsRead(true);
+                } else {
+                    br.setIsRead(false);
+                }
+
+                row[0] = messages.get(i).getToUsername();
+                row[1] = messages.get(i).getFromUsername();
+                row[2] = messages.get(i).getSubject();
+                row[3] = new Date(messages.get(i).getTimeStamp());
+                row[4] = messages.get(i).isRead();
+                model.addRow(row);
+
+                //displayTextArea.append(messages.get(i).toString());
+            }
+
+        }
+        revalidate();
+        repaint();
+        model.fireTableDataChanged();
+    }
+    
+    public void getAllFromUser()
+    {
+        mode = Mode.GETSPECIFICUSER;
+        loggedInUser = ((MainPanel) RetrieveMessagePanel.this.getParent()).getUsername();
+        DefaultTableModel model = new DefaultTableModel();
+        table.setModel(model);
+        String[] columnNames = {"To", "From", "Subject", "Date"};
+        BoldRenderer br = new BoldRenderer();
+        model.setColumnIdentifiers(columnNames);
+        messages = gmc.getAllFromSpecifiedUser(userTextField.getText(), loggedInUser);
+        if (messages.size() == 0) {
+            //displayTextArea.setText("No Messages Found!");
+        } else {
+            //displayTextArea.setText(" ");
+
+            table.setDefaultRenderer(Object.class, br);
+            for (int i = 0; i < messages.size(); i++) {
+                Object[] row = new Object[5];
+                System.out.println(i + ": " + br.isIsRead());
+                if (messages.get(i).isRead()) {
+                    br.setIsRead(true);
+                } else {
+                    br.setIsRead(false);
+                }
+                row[0] = messages.get(i).getToUsername();
+                row[1] = messages.get(i).getFromUsername();
+                row[2] = messages.get(i).getSubject();
+                row[3] = new Date(messages.get(i).getTimeStamp());
+                row[4] = messages.get(i).isRead();
+                model.addRow(row);
+
+                //displayTextArea.append(messages.get(i).toString());
+            }
+        }
+        revalidate();
+        repaint();
+        model.fireTableDataChanged();
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -203,8 +368,6 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        terrorTable1 = new terrorchat.TerrorTable();
 
         getUnreadButton.setText("Get Unread");
         getUnreadButton.addActionListener(new java.awt.event.ActionListener() {
@@ -249,8 +412,6 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
         ));
         jScrollPane1.setViewportView(table);
 
-        jScrollPane2.setViewportView(terrorTable1);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -272,11 +433,8 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -295,157 +453,25 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
                     .addComponent(jLabel1)
                     .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(92, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void getUnreadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getUnreadButtonActionPerformed
-        loggedInUser = ((MainPanel) RetrieveMessagePanel.this.getParent()).getUsername();
-        DefaultTableModel model = new DefaultTableModel();
-        table.setModel(model);
-        String[] columnNames = {"To", "From", "Subject", "Date", "Read"};
-        BoldRenderer br = new BoldRenderer();
-        model.setColumnIdentifiers(columnNames);
-        messages = gmc.getAllUnreadMessages(loggedInUser);
-        if (messages.size() == 0) {
-            //displayTextArea.setText("No Messages Found!");
-        } else {
-            //displayTextArea.setText(" ");
-            
-            for (int i = 0; i < messages.size(); i++) {
-                Object[] row = new Object[5];
-                System.out.println(i + ": " + br.isIsRead());
-                if (messages.get(i).isRead()) {
-                    br.setIsRead(true);                    
-                } else {
-                    br.setIsRead(false);
-                }
-                row[0] = messages.get(i).getToUsername();
-                row[1] = messages.get(i).getFromUsername();
-                row[2] = messages.get(i).getSubject();
-                row[3] = new Date(messages.get(i).getTimeStamp());
-                row[4] = messages.get(i).isRead();
-                
-                model.addRow(row);
-
-                //displayTextArea.append(messages.get(i).toString());
-            }
-            table.setDefaultRenderer(Object.class, br);
-        }
-        revalidate();
-        repaint();
+        getUnreadMessages();
     }//GEN-LAST:event_getUnreadButtonActionPerformed
 
     private void getSentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getSentButtonActionPerformed
-        loggedInUser = ((MainPanel) RetrieveMessagePanel.this.getParent()).getUsername();
-        DefaultTableModel model = new DefaultTableModel();
-        table.setModel(model);
-        String[] columnNames = {"To", "From", "Subject", "Date"};
-        BoldRenderer br = new BoldRenderer();
-        model.setColumnIdentifiers(columnNames);
-        messages = gmc.getAllSentMessages(loggedInUser);
-        if (messages.size() == 0) {
-            //displayTextArea.setText("No Messages Found!");
-        } else {
-            //displayTextArea.setText(" ");
-            
-            table.setDefaultRenderer(Object.class, br);
-            for (int i = 0; i < messages.size(); i++) {
-                Object[] row = new Object[4];
-                System.out.println(i + ": " + br.isIsRead());
-                if (messages.get(i).isRead()) {
-                    br.setIsRead(true);                    
-                } else {
-                    br.setIsRead(false);
-                }
-                row[0] = messages.get(i).getToUsername();
-                row[1] = messages.get(i).getFromUsername();
-                row[2] = messages.get(i).getSubject();
-                row[3] = new Date(messages.get(i).getTimeStamp());
-                model.addRow(row);
-
-                //displayTextArea.append(messages.get(i).toString());
-            }
-        }
-        revalidate();
-        repaint();
+        getSentMessages();
     }//GEN-LAST:event_getSentButtonActionPerformed
 
     private void getAllMessagesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getAllMessagesButtonActionPerformed
-        loggedInUser = ((MainPanel) RetrieveMessagePanel.this.getParent()).getUsername();
-        DefaultTableModel model = new DefaultTableModel();
-        table.setModel(model);
-        String[] columnNames = {"To", "From", "Subject", "Date", "Read"};
-        BoldRenderer br = new BoldRenderer();
-        model.setColumnIdentifiers(columnNames);
-        messages = gmc.getAllMessages(loggedInUser);
-        if (messages.size() == 0) {
-            //displayTextArea.setText("No Messages Found!");
-        } else {
-            //displayTextArea.setText(" ");
-            
-            table.setDefaultRenderer(Object.class, br);
-            for (int i = 0; i < messages.size(); i++) {
-                Object[] row = new Object[5];
-                //table.getColumn("To").setCellRenderer(br);
-                System.out.println(i + ": " + br.isIsRead());
-                if (messages.get(i).isRead()) {
-                    br.setIsRead(true);                    
-                } else {
-                    br.setIsRead(false);
-                }
-                
-                row[0] = messages.get(i).getToUsername();
-                row[1] = messages.get(i).getFromUsername();
-                row[2] = messages.get(i).getSubject();
-                row[3] = new Date(messages.get(i).getTimeStamp());
-                row[4] = messages.get(i).isRead();
-                model.addRow(row);
-
-                //displayTextArea.append(messages.get(i).toString());
-            }
-            
-        }
-        revalidate();
-        repaint();
+        getAllMessages();
     }//GEN-LAST:event_getAllMessagesButtonActionPerformed
 
     private void getAllFromUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getAllFromUserButtonActionPerformed
-        loggedInUser = ((MainPanel) RetrieveMessagePanel.this.getParent()).getUsername();
-        DefaultTableModel model = new DefaultTableModel();
-        table.setModel(model);
-        String[] columnNames = {"To", "From", "Subject", "Date"};
-        BoldRenderer br = new BoldRenderer();
-        model.setColumnIdentifiers(columnNames);
-        messages = gmc.getAllFromSpecifiedUser(userTextField.getText(), loggedInUser);
-        if (messages.size() == 0) {
-            //displayTextArea.setText("No Messages Found!");
-        } else {
-            //displayTextArea.setText(" ");
-            
-            table.setDefaultRenderer(Object.class, br);
-            for (int i = 0; i < messages.size(); i++) {
-                Object[] row = new Object[4];
-                System.out.println(i + ": " + br.isIsRead());
-                if (messages.get(i).isRead()) {
-                    br.setIsRead(true);                    
-                } else {
-                    br.setIsRead(false);
-                }
-                row[0] = messages.get(i).getToUsername();
-                row[1] = messages.get(i).getFromUsername();
-                row[2] = messages.get(i).getSubject();
-                row[3] = new Date(messages.get(i).getTimeStamp());
-                model.addRow(row);
-
-                //displayTextArea.append(messages.get(i).toString());
-            }
-        }
-        revalidate();
-        repaint();
+        getAllFromUser();
     }//GEN-LAST:event_getAllFromUserButtonActionPerformed
 
 
@@ -456,10 +482,8 @@ public class RetrieveMessagePanel extends javax.swing.JPanel {
     private javax.swing.JButton getUnreadButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField searchTextField;
     private javax.swing.JTable table;
-    private terrorchat.TerrorTable terrorTable1;
     private javax.swing.JTextField userTextField;
     // End of variables declaration//GEN-END:variables
 }
