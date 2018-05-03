@@ -1,6 +1,7 @@
 
 package terrorchat;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,7 +23,7 @@ public class sendMessagePanel extends javax.swing.JPanel {
     }
 
     private void fillCombo(){
-        
+        draftComboBobo.removeAllItems();
        map = SendMessageController.getDrafts(((MainPanel)this.getParent()).getUsername());
        Iterator it = map.keySet().iterator();
         while(it.hasNext()){
@@ -144,12 +145,12 @@ public class sendMessagePanel extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(getButton)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(saveButton)
                                 .addComponent(draftComboBobo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(deleteComboButton)))
+                                .addComponent(deleteComboButton))
+                            .addComponent(getButton))
                         .addGap(1, 1, 1)
                         .addComponent(toTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -187,6 +188,7 @@ public class sendMessagePanel extends javax.swing.JPanel {
         bodyTextArea.setText("");
         subjectTextField.setText("");
         toTextField.setText("");
+        fillCombo();
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void getButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getButtonActionPerformed
@@ -204,7 +206,11 @@ public class sendMessagePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_getButtonActionPerformed
 
     private void deleteComboButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteComboButtonActionPerformed
-        
+        SendMessageController.deleteDraft(draftComboBobo.getSelectedItem().toString());
+        fillCombo();
+        bodyTextArea.setText("");
+        subjectTextField.setText("");
+        toTextField.setText("");
     }//GEN-LAST:event_deleteComboButtonActionPerformed
 
 
